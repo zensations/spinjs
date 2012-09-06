@@ -1,0 +1,4 @@
+name = "Spin.js"
+description = Replace Drupal loading indicator with <a href="http://fgnass.github.com/spin.js/">Spin.js</a>.
+core = "7.x"
+package = "user interface"

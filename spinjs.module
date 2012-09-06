@@ -1,0 +1,155 @@
+<?php
+/**
+ * @file
+ * spin.js module implementation.
+ */
+
+/**
+ * Implements hook_init().
+ */
+function spinjs_init() {
+  drupal_add_js(array('spinjs' => spinjs_get_settings()), 'setting');
+  drupal_add_js(drupal_get_path('module', 'spinjs') . '/spin.js');
+  drupal_add_js(drupal_get_path('module', 'spinjs') . '/spinjs.js');
+}
+
+/**
+ * Retrieve settings for Spin.js.
+ *
+ * @param mixed $theme
+ *   The theme to retrieve settings for.
+ *   Default will return the current themes settings.
+ */
+function spinjs_get_settings($theme = FALSE) {
+  $settings = array(
+    'lines' => 13,
+    'length' => 7,
+    'width' => 4,
+    'radius' => 10,
+    'corners' => 1,
+    'rotate' => 0,
+    'color' => '#000',
+    'speed' => 1,
+    'trail' => 60,
+    'shadow' => FALSE,
+    'hwaccel' => FALSE,
+    'className' => 'spinner',
+    'zIndex' => 2e9,
+    'top' => 'auto',
+    'left' => 'auto',
+  );
+
+  foreach (array_keys($settings) as $key) {
+    if ($value = theme_get_setting('spinjs_' . $key, $theme)) {
+      $settings[$key] = $value;
+    }
+  }
+  return $settings;
+}
+
+/**
+ * Implements hook_form_system_theme_settings_alter().
+ */
+function spinjs_form_system_theme_settings_alter(&$form, &$form_state) {
+  $theme = $form_state['build_info']['args'][0];
+  $settings = spinjs_get_settings($theme);
+
+  $form['spinjs'] = array(
+    '#attached' => array(
+      'js' => array(
+        drupal_get_path('module', 'spinjs') . '/spinjs-admin.js',
+      ),
+      'css' => array(
+        drupal_get_path('module', 'spinjs') . '/spinjs-admin.css',
+      ),
+      'library' => array(
+        array('system', 'farbtastic'),
+        array('system', 'ui.slider'),
+      ),
+    ),
+    '#type' => 'fieldset',
+    '#title' => t('Spin.js'),
+    '#description' => t('Configure Spin.js appearance for this theme.'),
+
+    'spinjs_lines' => array(
+      '#type' => 'textfield',
+      '#title' => t('Lines'),
+      '#description' => t('The number of lines to draw.'),
+      '#default_value' => $settings['lines'],
+      '#attributes' => array('class' => array('slider')),
+    ),
+    'spinjs_length' => array(
+      '#type' => 'textfield',
+      '#title' => t('Length'),
+      '#description' => t('The length of each line.'),
+      '#default_value' => $settings['length'],
+      '#attributes' => array('class' => array('slider')),
+    ),
+    'spinjs_width' => array(
+      '#type' => 'textfield',
+      '#title' => t('Width'),
+      '#description' => t('The line thickness.'),
+      '#default_value' => $settings['width'],
+      '#attributes' => array('class' => array('slider')),
+    ),
+    'spinjs_radius' => array(
+      '#type' => 'textfield',
+      '#title' => t('Radius'),
+      '#description' => t('The radius of the inner circle.'),
+      '#default_value' => $settings['radius'],
+      '#attributes' => array('class' => array('slider')),
+    ),
+    'spinjs_corners' => array(
+      '#type' => 'textfield',
+      '#title' => t('Corners'),
+      '#description' => t('Corner roundness.'),
+      '#default_value' => $settings['corners'],
+      '#attributes' => array('class' => array('slider')),
+    ),
+    'spinjs_rotate' => array(
+      '#type' => 'textfield',
+      '#title' => t('Rotate'),
+      '#description' => t('Rotation offset.'),
+      '#default_value' => $settings['rotate'],
+      '#attributes' => array('class' => array('slider')),
+    ),
+    'spinjs_speed' => array(
+      '#type' => 'textfield',
+      '#title' => t('Speed'),
+      '#description' => t('Rounds per second.'),
+      '#default_value' => $settings['speed'],
+      '#attributes' => array('class' => array('slider')),
+    ),
+    'spinjs_trail' => array(
+      '#type' => 'textfield',
+      '#title' => t('Trail'),
+      '#description' => t('Afterglow percentage.'),
+      '#default_value' => $settings['trail'],
+      '#attributes' => array('class' => array('slider')),
+    ),
+    'spinjs_color' => array(
+      '#type' => 'textfield',
+      '#title' => t('Trail'),
+      '#size' => 7,
+      '#description' => t('The spinners color.'),
+      '#default_value' => $settings['color'],
+      '#attributes' => array('class' => array('color')),
+    ),
+    'spinjs_shadow' => array(
+      '#type' => 'checkbox',
+      '#title' => t('Shadow'),
+      '#size' => 7,
+      '#description' => t('Display a drop shadow?'),
+      '#default_value' => $settings['shadow'],
+      '#attributes' => array('class' => array('boolean')),
+    ),
+    'spinjs_hwaccel' => array(
+      '#type' => 'checkbox',
+      '#title' => t('Hardware Acceleration'),
+      '#size' => 7,
+      '#description' => t('Use browsers hardware acceleration?'),
+      '#default_value' => $settings['hwaccel'],
+      '#attributes' => array('class' => array('boolean')),
+    ),
+  );
+}
